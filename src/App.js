@@ -16,14 +16,71 @@ export const ACTIONS = {
 const reducer = (state, { type, payload }) => {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
+      // Making sure I don't have moore than one 0 starts the operation
+      if (payload.digit === "0" && state.currentOperand === "0") return state;
+      // Makes sure I don't have multiple periods
+      if (payload.digit === "." && state.currentOperand.includes("."))
+        return state;
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       };
 
+    // Actions for choosing operation
+    case ACTIONS.CHOOSE_OPERATION:
+      // Makes sure our operation doesn't do anything if we have not done something before
+      if (state.currentOperand == null && state.previousOperand == null) {
+        return state;
+      }
+
+      // This part makes sure our previousoperand is the new current operand
+      if (state.previousOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previousOperand: state.currentOperand,
+          currentOperand: null,
+        };
+      }
+
+      return {
+        ...state,
+        previousOperand: evaluate(state),
+        operation: payload.operation,
+        currentOperand: null,
+      };
+
+    // Returns an empty state when you clear
+    case ACTIONS.CLEAR:
+      return {};
+
     default:
       return {};
   }
+};
+
+const evaluate = ({ currentOperand, previousOperand, operation }) => {
+  const prev = parseFloat(previousOperand);
+  const curr = parseFloat(currentOperand);
+  if (isNaN(prev) || isNaN(curr)) return "";
+
+  let computation = "";
+  switch (operation) {
+    case "+":
+      computation = prev + curr;
+      break;
+    case "-":
+      computation = prev - curr;
+      break;
+    case "*":
+      computation = prev * curr;
+      break;
+    case "/":
+      computation = prev / curr;
+      break;
+  }
+
+  return computation.toString();
 };
 
 const App = () => {
@@ -44,8 +101,8 @@ const App = () => {
           </div>
           <div className="current-operand">{currentOperand}</div>
         </div>
-        <OperationButton digit="AC" dispatch={dispatch} cancel />
-        <OperationButton digit="9" dispatch={dispatch} />
+        <button onClick={() => dispatch({ type: ACTIONS.CLEAR })}>Ac</button>
+        <button>Del</button>
         <OperationButton operation="/" dispatch={dispatch} sign />
         <OperationButton operation="*" dispatch={dispatch} sign />
         <Button digit="7" dispatch={dispatch} />
