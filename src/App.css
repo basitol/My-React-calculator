@@ -35,12 +35,14 @@ body {
 
 .output {
   grid-area: 1 / 1 / 2 / 5;
+  height: 100px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-around;
   word-wrap: break-word;
   word-break: break-all;
+  /* border: 1px solid red; */
 }
 
 .output .previous-operand {
@@ -107,4 +109,14 @@ button:focus {
     rgba(88, 174, 214, 0.452) -9.69%,
     rgba(90, 134, 228, 0.4) 114.23%
   );
+}
+
+.equal {
+  background: #19acff;
+  box-shadow: -9px 13px 23px rgba(0, 163, 255, 0.65),
+    inset -3px 4px 11px #b0dfff;
+  border-radius: 12px;
+  color: #b2daff;
+
+  height: 96px;
 }

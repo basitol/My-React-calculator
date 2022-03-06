@@ -33,6 +33,13 @@ const reducer = (state, { type, payload }) => {
         return state;
       }
 
+      if (state.currentOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+        };
+      }
+
       // This part makes sure our previousoperand is the new current operand
       if (state.previousOperand == null) {
         return {
@@ -43,6 +50,7 @@ const reducer = (state, { type, payload }) => {
         };
       }
 
+      // Returns previous calculation to evaluate new value
       return {
         ...state,
         previousOperand: evaluate(state),
@@ -54,17 +62,39 @@ const reducer = (state, { type, payload }) => {
     case ACTIONS.CLEAR:
       return {};
 
+    // Evaluate values when using the equals sign
+    case ACTIONS.EVALUATE:
+      // When one of the operation needed to evaluate is not complete, equal sign won't run
+      if (
+        state.operation == null ||
+        state.previousOperand == null ||
+        state.currentOperand == null
+      ) {
+        return state;
+      }
+
+      // Sets out the evaluate operation
+      return {
+        ...state,
+        operation: null,
+        previousOperand: null,
+        currentOperand: evaluate(state),
+      };
+
     default:
       return {};
   }
 };
 
+//Defining the evaluate function
 const evaluate = ({ currentOperand, previousOperand, operation }) => {
+  // Assigning previous and current values to a variable
   const prev = parseFloat(previousOperand);
   const curr = parseFloat(currentOperand);
   if (isNaN(prev) || isNaN(curr)) return "";
 
   let computation = "";
+  // All evealuation needed
   switch (operation) {
     case "+":
       computation = prev + curr;
@@ -78,6 +108,8 @@ const evaluate = ({ currentOperand, previousOperand, operation }) => {
     case "/":
       computation = prev / curr;
       break;
+    default:
+      return "";
   }
 
   return computation.toString();
@@ -114,7 +146,12 @@ const App = () => {
         <Button digit="6" dispatch={dispatch} />
         <div className="div3">
           <OperationButton operation="+" dispatch={dispatch} sign plus />
-          <OperationButton operation="=" dispatch={dispatch} equal />
+          <button
+            className="equal"
+            onClick={() => dispatch({ type: ACTIONS.EVALUATE })}
+          >
+            =
+          </button>
         </div>
         <Button digit="1" dispatch={dispatch} />
         <Button digit="2" dispatch={dispatch} />

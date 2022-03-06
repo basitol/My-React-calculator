@@ -11,9 +11,9 @@ const OperationButton = ({
 }) => {
   return (
     <button
-      className={`${equal ? "equal" : ""} ${sign ? "sign" : ""} ${
-        cancel ? "cancel" : ""
-      } ${plus ? "plus" : ""}`}
+      className={`${sign ? "sign" : ""} ${cancel ? "cancel" : ""} ${
+        plus ? "plus" : ""
+      }`}
       onClick={() =>
         dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } })
       }
