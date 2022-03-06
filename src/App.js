@@ -69,6 +69,29 @@ const reducer = (state, { type, payload }) => {
     // Returns an empty state when you clear
     case ACTIONS.CLEAR:
       return {};
+    // Delete a digit or operation
+    case ACTIONS.DELETE_DIGIT:
+      // If in overwrite state
+      if (state.overwrite) {
+        return {
+          ...state,
+          currentOperand: null,
+          overwrite: false,
+        };
+      }
+
+      if (state.currentOperand == null) return {};
+      if (state.currentOperand.length === 1) {
+        return {
+          ...state,
+          currentOperand: null,
+        };
+      }
+
+      return {
+        ...state,
+        currentOperand: state.currentOperand.slice(0, -1),
+      };
 
     // Evaluate values when using the equals sign
     case ACTIONS.EVALUATE:
@@ -124,6 +147,16 @@ const evaluate = ({ currentOperand, previousOperand, operation }) => {
   return computation.toString();
 };
 
+const INTEGER_FORMATTER = new Intl.NumberFormat("en-us", {
+  maximumFractionDigits: 0,
+});
+
+const formatOperand = (operand) => {
+  if (operand == null) return;
+  const [integer, decimal] = operand.split(".");
+  if (decimal == null) return INTEGER_FORMATTER.format(integer);
+};
+
 const App = () => {
   // Calling the useReducer to set the operations value
   const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
@@ -138,12 +171,14 @@ const App = () => {
       <div className="container">
         <div className="output">
           <div className="previous-operand">
-            {previousOperand} {operation}
+            {formatOperand(previousOperand)} {operation}
           </div>
-          <div className="current-operand">{currentOperand}</div>
+          <div className="current-operand">{formatOperand(currentOperand)}</div>
         </div>
         <button onClick={() => dispatch({ type: ACTIONS.CLEAR })}>Ac</button>
-        <button>Del</button>
+        <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>
+          Del
+        </button>
         <OperationButton operation="/" dispatch={dispatch} sign />
         <OperationButton operation="*" dispatch={dispatch} sign />
         <Button digit="7" dispatch={dispatch} />
