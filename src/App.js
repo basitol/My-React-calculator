@@ -16,6 +16,14 @@ export const ACTIONS = {
 const reducer = (state, { type, payload }) => {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
+      //
+      if (state.overwrite) {
+        return {
+          ...state,
+          currentOperand: payload.digit,
+          overwrite: false,
+        };
+      }
       // Making sure I don't have moore than one 0 starts the operation
       if (payload.digit === "0" && state.currentOperand === "0") return state;
       // Makes sure I don't have multiple periods
@@ -76,6 +84,7 @@ const reducer = (state, { type, payload }) => {
       // Sets out the evaluate operation
       return {
         ...state,
+        overwrite: true,
         operation: null,
         previousOperand: null,
         currentOperand: evaluate(state),
@@ -94,7 +103,7 @@ const evaluate = ({ currentOperand, previousOperand, operation }) => {
   if (isNaN(prev) || isNaN(curr)) return "";
 
   let computation = "";
-  // All evealuation needed
+  // All evaluation needed
   switch (operation) {
     case "+":
       computation = prev + curr;
