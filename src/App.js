@@ -70,6 +70,7 @@ const reducer = (state, { type, payload }) => {
     case ACTIONS.CLEAR:
       return {};
     // Delete a digit or operation
+
     case ACTIONS.DELETE_DIGIT:
       // If in overwrite state
       if (state.overwrite) {
